@@ -1,0 +1,88 @@
+{
+  "version": "0.3.0-web4",
+  "textureMaxSize": 1024,
+  "textureCount": 225,
+  "threads": false,
+  "renderer": "Compatibility / WebGL 2",
+  "engine": "Godot 4.7.2",
+  "files": {
+    ".nojekyll": {
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    "asset-notices/Field-Recording-Notices.md": {
+      "bytes": 1240,
+      "sha256": "0CCCCD87B95F0594CAA1272BC7422C82259045B4C63976622AD36CF90184949B"
+    },
+    "asset-notices/Godot-Third-Party-Licenses.txt": {
+      "bytes": 99956,
+      "sha256": "6F77D867169A122E37E701EC3FB5B3EAB52B316A95A647E3E39BEE4BA3E21AA5"
+    },
+    "asset-notices/Kenney-Audio-CC0.txt": {
+      "bytes": 608,
+      "sha256": "B49AA9C56B04528B95913DE13E506A0F7C5E807B9925DB9BFEF86AF1F91120DB"
+    },
+    "asset-notices/MAKEHUMAN_CHARACTERS_LICENSE.md": {
+      "bytes": 13210,
+      "sha256": "233478D5E9AE7CC37DF5289FDE133465BC347538C7DE1DB4AE69C75E221D7D9B"
+    },
+    "asset-notices/Original-Prototype-Audio.md": {
+      "bytes": 808,
+      "sha256": "F49ED7D3CDD94390A7F6B3468A56F110D50D30402CD61FAF39EC69BEA9488BF2"
+    },
+    "asset-notices/Original-Soundscape.md": {
+      "bytes": 3950,
+      "sha256": "5F6CA2CFA2E1D3CF5072BC5837A3235A818374AD9F8C7B389C2D679E74323DE7"
+    },
+    "asset-notices/Quaternius-CC0.txt": {
+      "bytes": 847,
+      "sha256": "AFAC5819301671301C41E90402D26E4ADE5E459AD58FDF77F142147410862F1F"
+    },
+    "blackout_nyc_0_3_0_web4.audio.position.worklet.js": {
+      "bytes": 2973,
+      "sha256": "BE33985BC7160D6BF9646F259CD86B259CD67B02CCB297EE5C44F8AC84327BC8"
+    },
+    "blackout_nyc_0_3_0_web4.audio.worklet.js": {
+      "bytes": 7298,
+      "sha256": "5B476A9C9CE642C0EE4256436D1BC31D9C38F868ACA0F9A8E2A57C18D2DEC2A3"
+    },
+    "blackout_nyc_0_3_0_web4.html": {
+      "bytes": 13096,
+      "sha256": "973DDF8122DE785B6F6B1714954C274C019E12438F466EEAE4CE6C1C46F891FA"
+    },
+    "blackout_nyc_0_3_0_web4.js": {
+      "bytes": 279815,
+      "sha256": "33C94CB3175F3333B82E2A3BE5E8E86F77986F0AA2042B1631F6367A4E5BB6BA"
+    },
+    "blackout_nyc_0_3_0_web4.pck": {
+      "bytes": 74449336,
+      "sha256": "1390EA1D2D19E1E016F31578ABE11BBE654768A6EE7A8F11BEA422DF360F1AED"
+    },
+    "blackout_nyc_0_3_0_web4.png": {
+      "bytes": 21443,
+      "sha256": "3CB4495C0B98DFBE4B663CBF2B6836473572339BEB66D902367893162A70BE0E"
+    },
+    "blackout_nyc_0_3_0_web4.wasm": {
+      "bytes": 39514754,
+      "sha256": "FC74679E3B97F76878947FCD4FBE1268CBFA6188182A2E33BBC3F5DC9BFA57D0"
+    },
+    "CREDITS.md": {
+      "bytes": 1458,
+      "sha256": "961B0E3B97EEE1E705AEEC72CBBD98FF05EBF0606481196E32E215661F7F921C"
+    },
+    "index.html": {
+      "bytes": 13096,
+      "sha256": "973DDF8122DE785B6F6B1714954C274C019E12438F466EEAE4CE6C1C46F891FA"
+    },
+    "README.md": {
+      "bytes": 1604,
+      "sha256": "BDFEF145A5E8E77C6A3EFCB73FB15D5555B0C0F3C0F7529AB7EB26413C2DA387"
+    },
+    ".gitattributes": {
+      "bytes": 9,
+      "sha256": "8B9C3028D6467FF3BE7C793141927841D70F47F52D0590677438F488CA154992"
+    }
+  },
+  "textureLossyQuality": 0.8,
+  "gameVersion": "0.3.0-campaign"
+}

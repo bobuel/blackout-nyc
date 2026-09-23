@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111514">
+  <meta name="description" content="Blackout NYC: six survivors, seven neighborhoods, one way home. Play the browser development build.">
+  <title>Blackout NYC · Play</title>
+  <style>
+    :root { color-scheme: dark; --ink:#111514; --paper:#f1e7d5; --brass:#d8b67a; --muted:#b8b3a6; --line:#494536; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:100%; height:100%; background:var(--ink); color:var(--paper); }
+    body { font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; overflow:hidden; }
+    [hidden] { display:none !important; }
+    button { font:inherit; cursor:pointer; }
+    button:focus-visible,summary:focus-visible { outline:3px solid var(--paper); outline-offset:5px; }
+    #canvas { display:block; width:100vw; height:100vh; height:100dvh; border:0; outline:none; touch-action:none; }
+    #launch { position:fixed; inset:0; z-index:5; overflow:auto; display:grid; place-items:center; padding:clamp(22px,5vw,76px); background:radial-gradient(ellipse at 80% 0%,#353026 0%,transparent 55%),var(--ink); }
+    .sheet { width:min(100%,900px); border-top:1px solid var(--brass); padding-top:24px; }
+    .eyebrow { color:var(--brass); font-size:12px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; }
+    h1 { font:normal clamp(54px,10vw,112px)/.93 Georgia,"Times New Roman",serif; letter-spacing:-.055em; margin:38px 0 24px; }
+    h1 span { color:var(--brass); }
+    .lede { max-width:36ch; font:clamp(21px,3vw,29px)/1.4 Georgia,"Times New Roman",serif; margin:0 0 14px; }
+    .intro { max-width:56ch; color:var(--muted); margin:0; }
+    .layout { display:grid; grid-template-columns:1.1fr 1fr; gap:48px; margin-top:38px; padding-top:28px; border-top:1px solid var(--line); }
+    #play,#retry { display:inline-block; border:1px solid var(--brass); border-radius:2px; padding:13px 40px; color:var(--ink); background:var(--brass); font-weight:700; }
+    #play:hover,#retry:hover { background:var(--paper); border-color:var(--paper); }
+    #play:disabled { cursor:wait; opacity:.6; }
+    .small { font-size:13px; color:var(--muted); }
+    .save-note { max-width:43ch; margin:17px 0 0; }
+    .controls-title { font-size:12px; color:var(--brass); text-transform:uppercase; letter-spacing:.13em; margin:0 0 12px; }
+    .controls { margin:0; font-size:14px; color:var(--muted); }
+    .controls p { margin:0 0 8px; }
+    kbd { font:12px/1.4 system-ui,sans-serif; color:var(--paper); padding:2px 5px; border:1px solid var(--line); border-radius:3px; white-space:nowrap; }
+    .footer { border-top:1px solid var(--line); margin-top:28px; padding-top:16px; display:flex; gap:12px 30px; justify-content:space-between; flex-wrap:wrap; }
+    .footer p { margin:0; }
+    #loading { margin-top:2px; }
+    #loading-label { margin:0 0 10px; color:var(--brass); }
+    progress { display:block; width:100%; height:7px; accent-color:var(--brass); border:0; background:#35372f; }
+    progress::-webkit-progress-bar { background:#35372f; }
+    progress::-webkit-progress-value { background:var(--brass); }
+    progress::-moz-progress-bar { background:var(--brass); }
+    #transfer { font-variant-numeric:tabular-nums; margin:10px 0 0; }
+    #failure { border-left:2px solid #db9786; padding-left:16px; }
+    #failure h2 { font:23px/1.2 Georgia,serif; margin:0 0 10px; }
+    #failure-text { overflow-wrap:anywhere; white-space:pre-wrap; max-height:180px; overflow:auto; margin:0 0 16px; font-size:14px; }
+    #fullscreen { position:fixed; z-index:3; right:12px; top:12px; border:1px solid #756649; border-radius:3px; background:#111514dd; color:var(--paper); padding:6px 11px; font-size:12px; opacity:.8; }
+    #fullscreen:hover,#fullscreen:focus-visible { opacity:1; }
+    #runtime-errors { position:fixed; z-index:4; bottom:12px; right:12px; width:min(440px,calc(100% - 24px)); background:#211b19f2; border:1px solid #a77561; border-radius:3px; padding:8px 12px; font-size:12px; }
+    #runtime-errors summary { cursor:pointer; color:#efc6af; }
+    #runtime-log { margin:8px 0 0; max-height:160px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; }
+    noscript { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:32px; background:var(--ink); }
+    @media (max-width:620px) { .layout { grid-template-columns:1fr; gap:28px; } h1 { margin-top:28px; } .footer { margin-top:22px; } }
+  </style>
+  
+</head>
+<body>
+  <canvas id="canvas" tabindex="0" aria-label="Blackout NYC game">Your browser needs canvas support to play.</canvas>
+  <main id="launch">
+    <div class="sheet">
+      <div class="eyebrow">New York City · 1977</div>
+      <h1>BLACKOUT <span>NYC</span></h1>
+      <p class="lede">Six survivors. Seven neighborhoods.<br>One way home.</p>
+      <p class="intro">Cross a city without power. Every street has people who need something. Decide what you can give—and what getting home will cost.</p>
+      <div class="layout">
+        <section aria-label="Start the game">
+          <button id="play" type="button">Play Blackout NYC</button>
+          <div id="loading" hidden role="status" aria-live="polite">
+            <p id="loading-label">Preparing the night…</p>
+            <progress id="progress" aria-label="Game download progress"></progress>
+            <p id="transfer" class="small">Preparing the download…</p>
+          </div>
+          <div id="failure" hidden role="alert">
+            <h2>The game could not start.</h2>
+            <p id="failure-text"></p>
+            <button id="retry" type="button">Retry</button>
+          </div>
+          <p class="small save-note">Saves stay in this browser on this device. Clearing site data or using a private window can erase your progress.</p>
+        </section>
+        <section class="controls" aria-label="Default desktop controls">
+          <h2 class="controls-title">Desktop · keyboard &amp; mouse</h2>
+          <p><kbd>W A S D</kbd> Move &nbsp; <kbd>E</kbd> Interact &nbsp; <kbd>Shift</kbd> Cautious movement</p>
+          <p><kbd>Tab</kbd> Inspect &nbsp; <kbd>Esc</kbd> Pause &nbsp; Mouse wheel: zoom</p>
+          <p>In a fight, click a person or destination. Select an action twice: preview, then commit. <kbd>Enter</kbd> ends your turn.</p>
+          <p class="small">Reading and planning do not move the campaign clock. Controls and fullscreen are available in the game settings. The first street may pause while your browser prepares its 3D graphics.</p>
+        </section>
+      </div>
+      <div class="footer small">
+        <p>Browser development build · Work in progress</p>
+        <p>For mature audiences · Violence and adult themes · Not formally rated</p>
+      </div>
+    </div>
+  </main>
+  <button id="fullscreen" type="button" hidden>Fullscreen</button>
+  <details id="runtime-errors" hidden><summary>Game error · details</summary><pre id="runtime-log"></pre></details>
+  <noscript>JavaScript is required to play Blackout NYC. Enable it in your browser, then reload this page.</noscript>
+  <script src="blackout_nyc_0_3_0_web4.js"></script>
+  <script>
+    'use strict';
+    const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"blackout_nyc_0_3_0_web4","experimentalVK":false,"fileSizes":{"blackout_nyc_0_3_0_web4.pck":74449336,"blackout_nyc_0_3_0_web4.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+    const GODOT_THREADS_ENABLED = false;
+    (() => {
+      const byId = (id) => document.getElementById(id);
+      const canvas = byId('canvas');
+      const launch = byId('launch');
+      const play = byId('play');
+      const loading = byId('loading');
+      const progress = byId('progress');
+      const label = byId('loading-label');
+      const transfer = byId('transfer');
+      const failure = byId('failure');
+      const fullscreen = byId('fullscreen');
+      const runtimeLines = [];
+      let starting = false;
+      let running = false;
+      let failed = false;
+      let engine = null;
+      const bytes = (value) => {
+        if (value < 1024) return Math.round(value) + ' B';
+        if (value < 1048576) return (value / 1024).toFixed(1) + ' KB';
+        return (value / 1048576).toFixed(1) + ' MB';
+      };
+      function showFailure(error) {
+        failed = true;
+        starting = false;
+        console.error('Blackout NYC:', error);
+        launch.hidden = false;
+        loading.hidden = true;
+        play.hidden = true;
+        failure.hidden = false;
+        fullscreen.hidden = true;
+        byId('failure').querySelector('h2').textContent = running ? 'The game stopped.' : 'The game could not start.';
+        byId('failure-text').textContent = error && error.message ? error.message : String(error || 'An unexpected error occurred. Reload the page to try again.');
+        byId('retry').focus();
+      }
+      function engineError(...parts) {
+        console.error(...parts);
+        const message = parts.join(' ');
+        if (/\b(?:ERROR|Error|SCRIPT ERROR|RuntimeError|abort)\b/.test(message)) {
+          runtimeLines.push(message);
+          if (runtimeLines.length > 12) runtimeLines.shift();
+          byId('runtime-log').textContent = runtimeLines.join('\n');
+          byId('runtime-errors').hidden = false;
+        }
+      }
+      function onProgress(current, total) {
+        if (failed) return;
+        const received = Number.isFinite(current) ? Math.max(0, current) : 0;
+        const expected = Number.isFinite(total) ? Math.max(0, total) : 0;
+        if (expected > 0) {
+          const percent = Math.min(100, Math.floor(received / expected * 100));
+          progress.max = expected;
+          progress.value = Math.min(received, expected);
+          transfer.textContent = percent + '% · ' + bytes(received) + ' / ' + bytes(expected);
+          label.textContent = received >= expected ? 'Starting the game…' : 'Loading the city…';
+        } else {
+          progress.removeAttribute('value');
+          transfer.textContent = received > 0 ? bytes(received) + ' downloaded' : 'Preparing the download…';
+          label.textContent = 'Loading the city…';
+        }
+      }
+      play.addEventListener('click', () => {
+        if (starting || running) return;
+        starting = true;
+        play.hidden = true;
+        loading.hidden = false;
+        try {
+          if (typeof Engine === 'undefined') throw new Error('The game engine did not download. Check your connection and retry.');
+          if (GODOT_THREADS_ENABLED) throw new Error('This page requires the single-thread browser build. Please report this export error.');
+          const missing = Engine.getMissingFeatures({ threads: false });
+          if (missing.length) throw new Error('This browser cannot run the game. Missing support: ' + missing.join(', ') + '. Try a current desktop browser with hardware acceleration enabled.');
+          engine = new Engine(GODOT_CONFIG);
+          engine.startGame({
+            canvas,
+            onProgress,
+            onPrint: (...parts) => console.log(...parts),
+            onPrintError: engineError,
+            onExit: (code) => showFailure(code === 0 ? 'The game has closed. Retry to return to the title screen.' : 'The game exited with code ' + code + '. Retry to return to the title screen.'),
+          }).then(() => {
+            if (failed) return;
+            running = true;
+            starting = false;
+            launch.hidden = true;
+            fullscreen.hidden = true;
+            canvas.focus();
+          }).catch(showFailure);
+        } catch (error) { showFailure(error); }
+      });
+      byId('retry').addEventListener('click', () => window.location.reload());
+      fullscreen.addEventListener('click', () => {
+        // Keep the request directly in this user gesture; browsers require it.
+        const request = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+        Promise.resolve(request).then(() => canvas.focus()).catch(engineError);
+      });
+      document.addEventListener('fullscreenchange', () => {
+        fullscreen.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+      });
+      canvas.addEventListener('contextmenu', (event) => event.preventDefault());
+      window.addEventListener('error', (event) => {
+        if (starting) showFailure(event.error || event.message);
+        else if (running) engineError(event.error || event.message);
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        if (starting) showFailure(event.reason);
+        else if (running) engineError(event.reason);
+      });
+    })();
+  </script>
+</body>
+</html>
