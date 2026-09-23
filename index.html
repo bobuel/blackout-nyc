@@ -52,7 +52,13 @@
     #runtime-log { margin:8px 0 0; max-height:160px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; }
     noscript { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:32px; background:var(--ink); }
     @media (max-width:620px) { .layout { grid-template-columns:1fr; gap:28px; } h1 { margin-top:28px; } .footer { margin-top:22px; } }
-  </style>
+  #scene-loading { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:#0a1116; color:#e3dac4; padding:32px; text-align:center; }
+#scene-loading[hidden] { display:none; }
+#scene-loading .card { max-width:560px; }
+#scene-loading h2 { font:normal 36px Georgia,serif; color:#dbb06c; }
+#scene-loading p { line-height:1.6; }
+#scene-loading progress { width:80%; accent-color:#dbb06c; margin:20px 0; }
+</style>
   
 </head>
 <body>
@@ -83,7 +89,7 @@
           <p><kbd>W A S D</kbd> Move &nbsp; <kbd>E</kbd> Interact &nbsp; <kbd>Shift</kbd> Cautious movement</p>
           <p><kbd>Tab</kbd> Inspect &nbsp; <kbd>Esc</kbd> Pause &nbsp; Mouse wheel: zoom</p>
           <p>In a fight, click a person or destination. Select an action twice: preview, then commit. <kbd>Enter</kbd> ends your turn.</p>
-          <p class="small">Reading and planning do not move the campaign clock. Controls and fullscreen are available in the game settings. The first street may pause while your browser prepares its 3D graphics.</p>
+          <p class="small">Reading and planning do not move the campaign clock. Controls and fullscreen are available in the game settings. A loading screen appears while each neighborhood prepares.</p>
         </section>
       </div>
       <div class="footer small">
@@ -92,17 +98,26 @@
       </div>
     </div>
   </main>
+  <div id="scene-loading" hidden role="status" aria-live="polite"><div class="card"><p class="eyebrow">BLACKOUT NYC</p><h2 id="scene-loading-title">Preparing the street</h2><progress aria-label="Preparing the neighborhood"></progress><p>The first visit takes a little longer while your browser prepares the city.</p><p class="small">WASD moves · E interacts · Esc pauses<br>Look for the pale ring under your character and the gold destination marker.</p></div></div>
   <button id="fullscreen" type="button" hidden>Fullscreen</button>
   <details id="runtime-errors" hidden><summary>Game error · details</summary><pre id="runtime-log"></pre></details>
   <noscript>JavaScript is required to play Blackout NYC. Enable it in your browser, then reload this page.</noscript>
-  <script src="blackout_nyc_0_3_0_web4.js"></script>
+  <script src="blackout_nyc_0_3_1_friends3.js"></script>
   <script>
     'use strict';
-    const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"blackout_nyc_0_3_0_web4","experimentalVK":false,"fileSizes":{"blackout_nyc_0_3_0_web4.pck":74449336,"blackout_nyc_0_3_0_web4.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+    const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"blackout_nyc_0_3_1_friends3","experimentalVK":false,"fileSizes":{"blackout_nyc_0_3_1_friends3.pck":74452964,"blackout_nyc_0_3_1_friends3.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
     const GODOT_THREADS_ENABLED = false;
     (() => {
       const byId = (id) => document.getElementById(id);
       const canvas = byId('canvas');
+      window.blackoutLoading = (caption) => {
+        byId('scene-loading-title').textContent = caption;
+        byId('scene-loading').hidden = false;
+      };
+      window.blackoutSceneReady = () => {
+        byId('scene-loading').hidden = true;
+        canvas.focus();
+      };
       const launch = byId('launch');
       const play = byId('play');
       const loading = byId('loading');
@@ -122,6 +137,7 @@
         return (value / 1048576).toFixed(1) + ' MB';
       };
       function showFailure(error) {
+        byId('scene-loading').hidden = true;
         failed = true;
         starting = false;
         console.error('Blackout NYC:', error);
